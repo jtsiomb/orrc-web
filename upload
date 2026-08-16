@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rsync -vzr -L -e ssh --exclude '.hg' --exclude '*.swp' --exclude '*.o' \
+	`pwd`/ goat.mutantstargoat.com:/var/www/orrc

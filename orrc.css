@@ -1,0 +1,20 @@
+body {
+	background-color: #181828;
+	color: #dddddd;
+	font-family: helvetica, sans-serif;
+	font-size: 110%;
+	max-width: 56em;
+	margin: 0 auto;
+}
+
+a:link { color: #66bbff; }
+a:visited { color: #4488ee; }
+a:hover { color: "66ffbb"; }
+a:active { color: "66ffbb"; }
+
+h1 { color: #77ccff; }
+h2 { color: #aaeecc; }
+
+p {
+	text-align: justify;
+}
