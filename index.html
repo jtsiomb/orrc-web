@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title>ORRC - Own-Renderer Render Competition</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<link rel="stylesheet" type="text/css" href="orrc.css">
 	</head>
 	<body bgcolor="#181828" text="#dddddd" vlink="#4488ee" link="66bbff">
@@ -13,7 +14,8 @@
 			<a href="#community">Community</a> -
 			<a href="#current">Current round</a> -
 			<a href="#prev">Previous rounds</a> -
-			<a href="#rules">Rules</a>
+			<a href="#rules">Rules</a> -
+			<a href="#resources">Rendering resources</a>
 		</p>
 		<hr>
 
@@ -56,13 +58,20 @@
 		renderer for it: channel <b><tt>#orrc</tt></b> on
 		<a href="https://libera.chat">libera.chat</a>.
 
+		<h3><a name="discord"><font color="#eeccee">Discord</font></a></h3>
+
+		<p>You can also find us in the Graphics Programming discord, at the
+		<a href="https://discord.com/channels/318590007881236480/1538998041271468072">ORRC chat</a>
+		in the community projects section.</p>
+
 		<h2><a name="current"><font color="#aaeecc">Current round</font></a></h2>
 
 		<p>Coming soon...</p>
 
 		<h2><a name="prev"><font color="#aaeecc">Previous rounds</font></a></h2>
 
-		<table width="100%" bgcolor="#112033" cellpadding="0" border="1" cellspacing="0">
+		<p>None yet.</p>
+		<!--table width="100%" bgcolor="#112033" cellpadding="0" border="1" cellspacing="0">
 			<tr><th>round</th><th>theme</th><th># entries</th><th width="200">1st</th><th width="200">2nd</th><th width="200">3rd</th></tr><tr>
 				<td align="center"><a href="orrc000.html">January 1970</a></td>
 				<td align="center">Space</td>
@@ -71,7 +80,7 @@
 				<td align="center"><img src="img/none.gif"><br>Foo by Foobar</td>
 				<td align="center"><img src="img/none.gif"><br>Xyzzy by Wumpus</td>
 			</tr>
-		</table>
+		</table-->
 
 		<h2><a name="rules"><font color="#aaeecc">Rules</font></a></h2>
 
@@ -181,5 +190,84 @@
 			</ul>
 		</p>
 
+		<h2><a name="resources"><font color="#aaeecc">Rendering Resources</font></a></h2>
+		<p>For those not already intimately familiar with off-line rendering algorithms,
+		here are some resources you can use to learn how to write your renderer.</p>
+
+		<h3><a name="res-online"><font color="#eeccee">Online</font></a></h3>
+		<ul>
+			<li><a href="https://raytracing.github.io/">Ray Tracing in One Weekend</a>
+				series by Peter Shirley, Trevor D Black, and Steve Hollasch.</li>
+			<li><a href="https://pbr-book.org/">Physically Based Rendering: From Theory to Implementation</a>
+				online book by Matt Pharr, Wenzel Jakob, and Greg Humphreys.</li>
+			<li><a href="https://www.realtimerendering.com/raytracinggems/">Ray Tracing
+					Gems</a> series of books, available online.</li>
+			<li><a href="https://www.youtube.com/watch?v=Qz0KTGYJtUk">Coding Adventure: Ray Tracing</a>
+				video by Sebastian Lague</li>
+			<li><a href="https://www.youtube.com/watch?v=C1H4zIiCOaI">Coding Adventure: More Ray Tracing</a>
+				video by Sebastian Lague.</li>
+			<li><a href="https://www.jmeiners.com/Hugo-Elias-Radiosity/">Radiosity tutorial</a> by Hugo Elias.</li>
+		</ul>
+
+		<h3><a name="res-books"><font color="#eeccee">Books</font></a></h3>
+		<ul>
+			<li><b><i>Physically Based Rendering: From Theory to Implementation</i></b> by Matt
+				Pharr, Wenzel Jakob, and Greg Humphreys (also <a href="https://pbr-book.org/">available online</a>).</li>
+			<li><b><i>An Introduction to Ray Tracing</i></b> edited by Andrew S. Glassner
+				(<a href="books/intro_to_raytracing.pdf">pdf</a>).</li>
+			<li><b><i>Realistic Image Synthesis Using Photon Mapping</i></b> by Henrik Wann
+				Jensen.</li>
+			<li><b><i>Ray Tracing Gems</i></b> edited by Eric Haines and Tomas Akenine-Möler (also
+				<a href="https://www.realtimerendering.com/raytracinggems/rtg/">available online</a>).</li>
+			<li><b><i>Ray Tracing Gems II</i></b> edited by Adam Marrs, Peter Shirley, and Ingo Wald
+				(also <a href="https://www.realtimerendering.com/raytracinggems/rtg2/">available online</a>).</li>
+			<li><b><i>Radiosity and Realistic Image Synthesis</i></b> by Michael Cohen and John
+				Wallace (<a href="books/radiosity_realistic_image_synthesis.pdf">pdf</a>).</li>
+		</ul>
+
+		<h3><a name="res-papers"><font color="#eeccee">Papers</font></a></h3>
+		<ul>
+			<li>T. S. Trowbridge, K. P. Reitz,
+				"<i><a href="papers/1975-trowbridge_reitz-ggx.pdf">Average Irregularity Representation of a Rough Surface for Ray Reflection</a></i>",
+				Journal of the Optical Society of America, 1975. (<i>ggx microfacet model</i>).</li>
+			<li>James F. Blinn, "<i><a href="papers/1977-blinn.pdf">Models of Light Reflection for Computer Synthesized Pictures</a></i>",
+				Proceedings of SIGGRAPH 1977. (<i>blinn-phong brdf, microfacet brdfs</i>).</li>
+			<li>Turner Whitted, "<i><a href="papers/1980-raytracing-whitted.pdf">An Improved Illumination Model for Shaded Display</a></i>",
+				Communications of the ACM, 1980. (<i>raytracing</i>).</li>
+			<li>Robert L. Cook, Kenneth E. Torrance,
+				"<i><a href="papers/1981-cook-torrance.pdf">A Reflectance Model for Computer Graphics</a></i>",
+				Proceedings of SIGGRAPH 1981. (<i>cook-torrance metal brdf</i>).</li>
+			<li>Robert L. Cook, Thomas Porter, Loren Carpenter,
+				"<i><a href="papers/1984-distributed_raytracing-cook_porter_carpenter.pdf">Distributed Ray Tracing</a></i>",
+				Proceedings of SIGGRAPH 1984. (<i>monte carlo ray tracing</i>).</li>
+			<li>Michael F. Cohen, Donald P. Greenberg,
+				"<i><a href="papers/1985-hemicube-cohen_greenberg.pdf">The Hemi-Cube: A Radiosity Solution for Complex Environments</a></i>",
+				Proceedings of SIGGRAPH 1985. (<i>hemicube, radiosity</i>).</li>
+			<li>James T. Kajiya, "<i><a href="papers/1986-rendering_eqn-kajiya.pdf">The Rendering Equation</a></i>",
+				Proceedings of SIGGRAPH 1986. (<i>rendering equation, path tracing</i>).</li>
+			<li>Robert L. Cook, Loren Carpenter, Edwin Catmull,
+				"<i><a href="papers/1987-cook_carpenter_catmull-reyes.pdf">The Reyes Image Rendering Architecture</a></i>",
+				Proceedings of SIGGRAPH 1987. (<i>reyes</i>).</li>
+			<li>John C. Hart, Daniel J. Sandin, Louis H. Kauffman,
+				"<i><a href="papers/1989-raytrace_fractals-hart-sandin-kauffman.pdf">Ray Tracing Deterministic 3-D Fractals</a></i>",
+				Proceedings of SIGGRAPH 1989. (<i>distance field sphere tracing, hart julia
+					quaternion distance estimator</i>).</li>
+			<li>Eric P. Lafortune, Yves D. Willems,
+				"<i><a href="papers/1994-lafortune-phong.pdf">Using the Modified Phong Reflectance Model for Physically Based Rendering</a></i>",
+				Report CW197, K.U.Leuven, 1994. (<i>lafortune brdf</i>).</li>
+			<li>Henrik Wann Jensen,
+				"<i><a href="papers/1996-jensen-photonmap.pdf">Global Illumination using Photon Maps</a></i>",
+				Proceedings of Eurographics 1996. (<i>photon mapping</i>).</li>
+			<li>Eric Veach, Leonidas J. Guibas,
+				"<i><a href="papers/1997-mlt-veach_guibas.pdf">Metropolis Light Transport</a></i>",
+				Proceedings of SIGGRAPH 1997.</li>
+			<li>Bruce Walter, Stephen R. Marchner, Hongsong Li, Kenneth E. Torrance,
+				"<i><a href="papers/2007-walter_marschner_li_torrance-ggx.pdf">Microfacet Models for Refraction through Rough Surfaces</a></i>",
+				Proceedings of Eurographics 2007. (<i>ggx microfacet model</i>).</li>
+			<li>Brent Burley,
+				"<i><a href="papers/s2012_pbs_disney_brdf_notes_v3.pdf">Physically-Based Shading at Disney</a></i>",
+				Part of SIGGRAPH 2012 Course: Practical Physically Based Shading in Film and Game
+				Production. (<i>disney principled brdf</i>).</li>
+		</ul>
 	</font></body>
 </html>
