@@ -1,5 +1,12 @@
+*.o
+*.d
 *.swp
 *.jpg
 *.png
 *.gif
 img/
+core.*
+books/
+cgi-bin/
+papers/
+round*/
