@@ -4,21 +4,35 @@
 #include <unistd.h>
 #include "cgi.h"
 #include "dynarr.h"
+#include "html.h"
+
+struct entry {
+	char *name, *desc;
+	char *thumbimg;
+};
 
 #define ROOT_DIR		"/var/www/orrc"
 
 extern const char html_top[], html_bot[];
 
+static int load_entries(int compo_id);
 static void debug_output(void);
 
 int main(void)
 {
-	int existing_user = 0;
-	const char *str;
-	char userid[128];
-
 	/* make sure we're in the correct working directory to open files */
 	chdir(ROOT_DIR);
+
+	html_set_title("ORRC voting");
+	html_set_css("orrc.css");
+	html_set_color(HTML_TEXT, 0xdddddd);
+	html_set_color(HTML_BG, 0x181828);
+	html_set_color(HTML_LINK, 0x66bbff);
+	html_set_color(HTML_VLINK, 0x4488ee);
+	html_set_color(HTML_H1, 0x77ccff);
+	html_set_color(HTML_H2, 0xaaeecc);
+	html_set_color(HTML_H3, 0xeeccee);
+	html_set_font("sans-serif", 4);
 
 	if(cgi_init() == -1) {
 		return 1;
@@ -27,23 +41,20 @@ int main(void)
 		return 1;
 	}
 
-	if((str = cgi_find_cookie("ORRC_USER"))) {
-		existing_user = 1;
-		strcpy(userid, str);
-	} else {
-		strcpy(userid, "foobar");
-		cgi_set_cookie("ORRC_USER", userid, CGI_COOKIE_SESSION);
+	if(load_entries(0) == -1) {
+		cgi_panic("failed to load competition entries\n");
 	}
 
 	cgi_begin_output();
+	html_begin();
 
-	puts(html_top);
-	puts("<h1><font color=\"#77ccff\">ORRC voting</font></h1><hr>\n");
+	html_heading(1, "ORRC voting");
+	html_sep();
 
-	printf("<p><i>%s</i> user (%s)</p>\n", existing_user ? "existing" : "new", userid);
+	html_heading(2, "Entries");
 
 	debug_output();
-	fputs(html_bot, stdout);
+	html_end();
 	return 0;
 }
 
@@ -51,9 +62,11 @@ static void debug_output(void)
 {
 	int i;
 
-	puts("<hr>\n<h2>Debug section</h2>\n");
+	html_sep();
+	html_heading(2, "Debug section");
 	if(!dynarr_empty(cgi_input)) {
-		printf("<h3>Query data</h3>\n<ul>\n");
+		html_heading(3, "Query data");
+		printf("<ul>\n");
 		for(i=0; i<dynarr_size(cgi_input); i++) {
 			printf("<li>\"%s\": \"%s\"</li>\n", cgi_input[i].name, cgi_input[i].value);
 		}
@@ -61,10 +74,16 @@ static void debug_output(void)
 	}
 
 	if(!dynarr_empty(cgi_cookies)) {
-		printf("<h3>Cookies</h3>\n<ul>\n");
+		html_heading(3, "Cookies");
+		printf("<ul>\n");
 		for(i=0; i<dynarr_size(cgi_cookies); i++) {
 			printf("<li>\"%s\": \"%s\"</li>\n", cgi_cookies[i].name, cgi_cookies[i].value);
 		}
 		puts("</ul>\n");
 	}
+}
+
+static int load_entries(int compo_id)
+{
+	return 0;
 }

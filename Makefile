@@ -1,6 +1,5 @@
 src = $(wildcard src/*.c)
-ssrc = $(wildcard src/*.s)
-obj = $(src:.c=.o) $(ssrc:.s=.o)
+obj = $(src:.c=.o)
 dep = $(src:.c=.d)
 bin = cgi-bin/voting
 

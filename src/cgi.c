@@ -5,8 +5,7 @@
 #include <stdarg.h>
 #include "cgi.h"
 #include "dynarr.h"
-
-extern const char html_top[], html_bot[];
+#include "html.h"
 
 struct cgivar *cgi_input, *cgi_cookies;
 static int cgivars_sorted;
@@ -185,15 +184,17 @@ void cgi_panic(const char *fmt, ...)
 
 	if(!outstate) {
 		cgi_begin_output();
-		puts(html_top);
+		html_begin();
 	}
 
-	puts("<h1><font color=\"#ff0000\">ORRC Panic!</font></h1><hr><p>");
+	html_heading(1, "ORRC Panic!");
+	html_sep();
+	puts("<p>");
 	va_start(ap, fmt);
 	vprintf(fmt, ap);
 	va_end(ap);
 	puts("</p>");
-	puts(html_bot);
+	html_end();
 	exit(1);
 }
 
