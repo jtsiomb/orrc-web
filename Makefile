@@ -1,7 +1,7 @@
 src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
 dep = $(src:.c=.d)
-bin = cgi-bin/voting
+bin = cgi-bin/orrc
 
 CFLAGS = -std=gnu89 -pedantic -Wall -g -MMD
 LDFLAGS = -static -ltreestor

@@ -119,7 +119,7 @@ static void op_vote(void)
 
 	html_heading(2, "Entries");
 
-	puts("<form action=\"voting\" method=\"post\">");
+	puts("<form action=\"orrc\" method=\"post\">");
 	puts("<input type=\"hidden\" name=\"cmd\" value=\"submit\">");
 	puts("<table width=\"100%\" border=\"1\">");
 	for(i=0; i<dynarr_size(entries); i++) {
@@ -128,7 +128,7 @@ static void op_vote(void)
 		sprintf(buf, "current/entry%02d/", ent->id);
 		if(access(buf, X_OK) == -1) continue;
 
-		printf("<tr><td width=\"200\"><a href=\"voting?dir=current&entry=%d\">", ent->id);
+		printf("<tr><td width=\"200\"><a href=\"orrc?dir=current&entry=%d\">", ent->id);
 
 		sprintf(buf, "current/entry%02d/thumb.jpg", ent->id);
 		thumbimg = access(buf, R_OK) == -1 ? "img/none.gif" : buf;
