@@ -9,7 +9,8 @@
 
 enum {
 	ST_VOTE,
-	ST_PROC
+	ST_SUBMIT,
+	ST_SHOW
 };
 
 struct entry {
@@ -24,8 +25,9 @@ static int state;
 static char *theme;
 static struct entry *entries;
 
-static void scr_voting(void);
-static void scr_procvote(void);
+static void op_vote(void);
+static void op_submit(void);
+static void op_show(void);
 static int load_entries(void);
 static void debug_output(void);
 
@@ -35,6 +37,8 @@ char *strdup_nf(const char *s);
 
 int main(void)
 {
+	const char *str;
+
 	/* make sure we're in the correct working directory to open files */
 	chdir(ROOT_DIR);
 
@@ -56,13 +60,16 @@ int main(void)
 		return 1;
 	}
 
-	if(cgi_req == CGI_POST) {
-		state = ST_PROC;
-	} else {
-		state = ST_VOTE;
+	state = ST_VOTE;
+	if((str = cgi_find_input("cmd"))) {
+		if(strcmp(str, "show") == 0) {
+			state = ST_SHOW;
+		} else if(strcmp(str, "submit") == 0) {
+			state = ST_SUBMIT;
+		}
 	}
 
-	if(state == ST_VOTE) {
+	if(state == ST_VOTE || state == ST_SHOW) {
 		if(load_entries() == -1) {
 			cgi_panic("failed to load competition entries\n");
 		}
@@ -71,16 +78,17 @@ int main(void)
 	cgi_begin_output();
 	html_begin();
 
-	html_heading(1, "ORRC voting");
-	html_sep();
-
 	switch(state) {
 	case ST_VOTE:
-		scr_voting();
+		op_vote();
 		break;
 
-	case ST_PROC:
-		scr_procvote();
+	case ST_SUBMIT:
+		op_submit();
+		break;
+
+	case ST_SHOW:
+		op_show();
 		break;
 
 	default:
@@ -92,12 +100,15 @@ int main(void)
 	return 0;
 }
 
-static void scr_voting(void)
+static void op_vote(void)
 {
 	int i, j;
 	char buf[256];
 	const char *thumbimg;
 	struct entry *ent;
+
+	html_heading(1, "ORRC voting");
+	html_sep();
 
 	if(dynarr_empty(entries)) {
 		puts("<p>There is no current voting round.</p>");
@@ -108,13 +119,16 @@ static void scr_voting(void)
 
 	html_heading(2, "Entries");
 
-	puts("<form action=\"voting\" method=\"post\">\n");
+	puts("<form action=\"voting\" method=\"post\">");
+	puts("<input type=\"hidden\" name=\"cmd\" value=\"submit\">");
 	puts("<table width=\"100%\" border=\"1\">");
 	for(i=0; i<dynarr_size(entries); i++) {
 		ent = entries + i;
+
 		sprintf(buf, "current/entry%02d/", ent->id);
 		if(access(buf, X_OK) == -1) continue;
-		printf("<tr><td width=\"200\"><a href=\"%s\">", buf);
+
+		printf("<tr><td width=\"200\"><a href=\"voting?dir=current&entry=%d\">", ent->id);
 
 		sprintf(buf, "current/entry%02d/thumb.jpg", ent->id);
 		thumbimg = access(buf, R_OK) == -1 ? "img/none.gif" : buf;
@@ -133,11 +147,21 @@ static void scr_voting(void)
 	puts("<center><input type=\"submit\" value=\"Submit\"></center></form>");
 }
 
-static void scr_procvote(void)
+static void op_submit(void)
 {
+	html_heading(1, "ORRC voting");
+	html_sep();
+
 	html_heading(2, "Votes submitted");
 
 	puts("<p>Thank you for voting!</p>");
+}
+
+static void op_show(void)
+{
+	html_heading(1, "ORRC Entry");
+	html_sep();
+
 }
 
 static void debug_output(void)
