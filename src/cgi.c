@@ -7,6 +7,7 @@
 #include "dynarr.h"
 #include "html.h"
 
+enum cgi_request cgi_req;
 struct cgivar *cgi_input, *cgi_cookies;
 static int cgivars_sorted;
 
@@ -37,6 +38,16 @@ int cgi_read_input(void)
 	int contlen, sz;
 	char *query, *end;
 
+	if((env = getenv("REQUEST_METHOD")) && strcmp(env, "POST") == 0) {
+		cgi_req = CGI_POST;
+	} else {
+		cgi_req = CGI_GET;
+	}
+
+	if((env = getenv("QUERY_STRING"))) {
+		cgi_proc_input(env, CGI_QUERY);
+	}
+
 	if((env = getenv("CONTENT_LENGTH")) && (contlen = atoi(env)) > 0) {
 		if(!(query = malloc(contlen + 1))) {
 			cgi_panic("failed to allocate %d bytes for query buffer\n", contlen + 1);
@@ -53,10 +64,6 @@ int cgi_read_input(void)
 
 		cgi_proc_input(query, CGI_QUERY);
 		free(query);
-	}
-
-	if((env = getenv("QUERY_STRING"))) {
-		cgi_proc_input(env, CGI_QUERY);
 	}
 
 	if((env = getenv("HTTP_COOKIE"))) {

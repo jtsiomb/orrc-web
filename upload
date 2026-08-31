@@ -1,4 +1,4 @@
 #!/bin/sh
 
-rsync -vzr -L -e ssh --exclude '.git' --exclude '*.swp' --exclude '*.o' \
+rsync -vzrl -e ssh --exclude '.git' --exclude '*.swp' --exclude '*.o' \
 	--exclude '*.d' --exclude 'core.*' `pwd`/ goat.mutantstargoat.com:/var/www/orrc

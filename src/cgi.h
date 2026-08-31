@@ -18,6 +18,9 @@ enum cgi_input_type {
 	CGI_COOKIE
 };
 
+enum cgi_request { CGI_GET, CGI_POST };
+
+extern enum cgi_request cgi_req;
 extern struct cgivar *cgi_input, *cgi_cookies;
 
 int cgi_init(void);
@@ -32,6 +35,9 @@ const char *cgi_find_cookie(const char *name);
 
 void cgi_begin_output(void);
 
+#ifdef __GNUC__
+__attribute__((noreturn))
+#endif
 void cgi_panic(const char *fmt, ...);
 
 

@@ -4,6 +4,7 @@ dep = $(src:.c=.d)
 bin = cgi-bin/voting
 
 CFLAGS = -std=gnu89 -pedantic -Wall -g -MMD
+LDFLAGS = -static -ltreestor
 
 $(bin): $(obj)
 	$(CC) -o $@ $(obj) $(LDFLAGS)
