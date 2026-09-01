@@ -23,4 +23,6 @@ void html_end(void);
 void html_heading(int lvl, const char *text);
 void html_sep(void);
 
+void html_img(const char *img, const char *desc, const char *link);
+
 #endif	/* HTML_H_ */

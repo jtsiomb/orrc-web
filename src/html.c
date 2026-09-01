@@ -75,3 +75,12 @@ void html_sep(void)
 {
 	puts("<hr>");
 }
+
+void html_img(const char *img, const char *desc, const char *link)
+{
+	if(link) {
+		printf("<a href=\"%s\"><img src=\"%s\" alt=\"%s\"></a>\n", link, img, desc);
+	} else {
+		printf("<img src=\"%s\" alt=\"%s\">\n", img, desc);
+	}
+}
