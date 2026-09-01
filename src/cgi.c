@@ -11,6 +11,8 @@ enum cgi_request cgi_req;
 struct cgivar *cgi_input, *cgi_cookies;
 static int cgivars_sorted;
 
+const char *cgi_remote_addr;
+
 static struct cgivar *new_cookies;
 static int outstate;	/* 0: before headers, 1: body */
 
@@ -37,6 +39,8 @@ int cgi_read_input(void)
 	char *env;
 	int contlen, sz;
 	char *query, *end;
+
+	cgi_remote_addr = getenv("REMOTE_ADDR");
 
 	if((env = getenv("REQUEST_METHOD")) && strcmp(env, "POST") == 0) {
 		cgi_req = CGI_POST;

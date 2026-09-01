@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "orrc.h"
 #include "cgi.h"
 #include "dynarr.h"
@@ -11,11 +12,17 @@
 
 struct entry *entries;
 char *theme;
+const char *round_dir;
+const char *round_date;
+static char round_date_buf[128];
 
 static int state;
 
-static int load_entries(void);
 static void debug_output(void);
+static int load_entries(void);
+static int parse_date(struct tm *tm, const char *dstr);
+static char *locate_image(const char *dir, const char *basename);
+static void shuffle(struct entry *arr, int count);
 
 
 int main(void)
@@ -25,7 +32,7 @@ int main(void)
 	/* make sure we're in the correct working directory to open files */
 	chdir(ROOT_DIR);
 
-	html_set_title("ORRC voting");
+	html_set_title("ORRC - Own-Renderer Render Competition");
 	html_set_css("orrc.css");
 	html_set_color(HTML_TEXT, 0xdddddd);
 	html_set_color(HTML_BG, 0x181828);
@@ -43,23 +50,27 @@ int main(void)
 		return 1;
 	}
 
-	state = ST_VOTE;
+	state = ST_SHOW;
 	if((str = cgi_find_input("cmd"))) {
-		if(strcmp(str, "show") == 0) {
-			state = ST_SHOW;
+		if(strcmp(str, "vote") == 0) {
+			state = ST_VOTE;
 		} else if(strcmp(str, "submit") == 0) {
 			state = ST_SUBMIT;
 		}
 	}
 
-	if(state == ST_VOTE || state == ST_SHOW) {
-		if(load_entries() == -1) {
-			cgi_panic("failed to load competition entries\n");
+	/* default to current, and also force current if voting */
+	if(state == ST_VOTE || state == ST_SUBMIT || !(round_dir = cgi_find_input("dir"))) {
+		round_dir = "current";
+	} else {
+		if(strlen(round_dir) > 32) {
+			cgi_panic("\"dir\" parameter too long");
 		}
 	}
 
-	cgi_begin_output();
-	html_begin();
+	if(load_entries() == -1) {
+		cgi_panic("failed to load competition entries");
+	}
 
 	switch(state) {
 	case ST_VOTE:
@@ -78,7 +89,12 @@ int main(void)
 		cgi_panic("unknown state");
 	}
 
-	debug_output();
+	html_sep();
+	puts("<p><a href=\"/\">Back to the main page</a></p>");
+
+	if((str = cgi_find_input("debug")) && strcmp(str, "false") != 0 && strcmp(str, "0") != 0) {
+		debug_output();
+	}
 	html_end();
 	return 0;
 }
@@ -111,20 +127,42 @@ static void debug_output(void)
 	}
 }
 
+static const char *monthstr[] = {0, "January", "February", "March", "April", "May",
+	"June", "July", "August", "September", "October", "November", "December"};
+
 static int load_entries(void)
 {
 	struct ts_node *root, *node;
 	struct entry entry;
-	const char *str, *title, *user, *desc, *img, *archive;
+	const char *str, *title, *user, *desc, *img, *archive, *start, *end;
 	int num;
+	char path[256];
+	struct tm tm0, tm1;
 
 	entries = dynarr_alloc_nf(0, sizeof *entries);
 
-	if(!(root = ts_load("current/entries")) || strcmp(root->name, "orrc") != 0) {
+	snprintf(path, sizeof path, "%s/entries", round_dir);
+	if(!(root = ts_load(path)) || strcmp(root->name, "orrc") != 0) {
 		return 0;
 	}
-	if((str = ts_lookup_str(root, "orrc.theme", 0))) {
+	if((str = ts_get_attr_str(root, "theme", 0))) {
 		theme = strdup_nf(str);
+	}
+
+	start = ts_get_attr_str(root, "start", 0);
+	end = ts_get_attr_str(root, "end", 0);
+	if(parse_date(&tm0, start) != -1 && parse_date(&tm1, end) != -1) {
+		round_date = (const char*)round_date_buf;
+		if(tm0.tm_year != tm1.tm_year) {
+			sprintf(round_date_buf, "%d %s %d - %d %s %d", tm0.tm_mday, monthstr[tm0.tm_mon],
+					tm0.tm_year, tm1.tm_mday, monthstr[tm1.tm_mon], tm1.tm_year);
+		} else if(tm0.tm_mon == tm1.tm_mon) {
+			sprintf(round_date_buf, "%d - %d %s %d", tm0.tm_mday, tm1.tm_mday,
+					monthstr[tm0.tm_mon], tm0.tm_year);
+		} else {
+			sprintf(round_date_buf, "%d %s - %d %s %d", tm0.tm_mday, monthstr[tm0.tm_mon],
+					tm1.tm_mday, monthstr[tm1.tm_mon], tm0.tm_year);
+		}
 	}
 
 	node = root->child_list;
@@ -145,12 +183,53 @@ static int load_entries(void)
 			if(img) entry.img = strdup_nf(img);
 			entry.archive = strdup_nf(archive);
 
+			/* populate derived fields */
+			snprintf(path, sizeof path, "%s/entry%02d", round_dir, entry.id);
+			entry.imgthumb = locate_image(path, "thumb");
+			entry.imgprev = locate_image(path, "preview");
+
 			dynarr_push_nf(entries, &entry);
 		}
 next:	node = node->next;
 	}
 
+	shuffle(entries, dynarr_size(entries));
+
 	ts_free_tree(root);
+	return 0;
+}
+
+static int parse_date(struct tm *tm, const char *dstr)
+{
+	char buf[5] = {0};
+
+	if(!dstr || strlen(dstr) < 8) return -1;
+
+	memcpy(buf, dstr, 4);
+	if((tm->tm_year = atoi(buf)) < 1900) {
+		return -1;
+	}
+
+	memcpy(buf, dstr + 4, 2);
+	buf[2] = 0;
+	if((tm->tm_mon = atoi(buf)) < 1 || tm->tm_mon > 12) {
+		return -1;
+	}
+	if((tm->tm_mday = atoi(dstr + 6)) < 1 || tm->tm_mday > 31) {
+		return -1;
+	}
+	return 0;
+}
+
+struct entry *find_entry(int id)
+{
+	int i;
+
+	for(i=0; i<dynarr_size(entries); i++) {
+		if(entries[i].id == id) {
+			return entries + i;
+		}
+	}
 	return 0;
 }
 
@@ -168,13 +247,50 @@ const char *filesize_str(size_t sz)
 	static const char *suffix[] = {"bytes", "kb", "mb", "gb", "tb", 0};
 	static char buf[32];
 	int idx;
+	size_t frac = 0;
 
 	idx = 0;
 	while(sz >= 1024 && suffix[idx + 1]) {
+		frac = sz & 0x3ff;
 		sz >>= 10;
 		idx++;
 	}
 
-	sprintf(buf, "%lu %s", sz, suffix[idx]);
+	if(frac) {
+		sprintf(buf, "%lu.%lu %s", sz, frac * 10 >> 10, suffix[idx]);
+	} else {
+		sprintf(buf, "%lu %s", sz, suffix[idx]);
+	}
 	return buf;
+}
+
+static char *locate_image(const char *dir, const char *basename)
+{
+	static const char *suffixes[] = {".png", ".jpg", ".jpeg", ".gif", 0};
+	int i;
+	char buf[256];
+
+	for(i=0; suffixes[i]; i++) {
+		sprintf(buf, "%s/%s%s", dir, basename, suffixes[i]);
+		if(access(buf, R_OK) == 0) {
+			return strdup_nf(buf);
+		}
+	}
+	return strdup_nf("img/none.gif");
+}
+
+static void shuffle(struct entry *arr, int count)
+{
+	int i, r;
+	struct entry tmp;
+
+	srand(time(0));
+	for(i=1; i<count; i++) {
+		r = rand() % (i + 1);
+		if(i != r) {
+			tmp = arr[i];
+			arr[i] = arr[r];
+			arr[r] = tmp;
+		}
+	}
 }

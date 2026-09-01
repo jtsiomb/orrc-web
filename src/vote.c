@@ -10,8 +10,10 @@ void op_vote(void)
 {
 	int i, j;
 	char buf[256];
-	const char *thumbimg;
 	struct entry *ent;
+
+	cgi_begin_output();
+	html_begin();
 
 	html_heading(1, "ORRC voting");
 	html_sep();
@@ -21,7 +23,12 @@ void op_vote(void)
 		return;
 	}
 
-	printf("<p><b>Theme</b>: %s</p>\n", theme);
+	if(cgi_find_cookie("voted")) {
+		vote_reject_msg();
+		return;
+	}
+
+	printf("<p><big><b>Theme</b>: %s</big></p>\n", theme);
 
 	html_heading(2, "Entries");
 
@@ -37,9 +44,7 @@ void op_vote(void)
 		printf("<tr><td width=\"200\"><a href=\"orrc?cmd=show&dir=current&entry=%d\">",
 				ent->id);
 
-		sprintf(buf, "current/entry%02d/thumb.jpg", ent->id);
-		thumbimg = access(buf, R_OK) == -1 ? "img/none.gif" : buf;
-		printf("<img src=\"%s\" alt=\"%s\">", thumbimg, ent->title);
+		printf("<img src=\"%s\" alt=\"%s\">", ent->imgthumb, ent->title);
 
 		printf("<br><center><b>%s</b></center></a></td>", ent->title);
 		printf("<td>%s</td><td>%s</td>\n", ent->user, ent->desc);
@@ -52,4 +57,15 @@ void op_vote(void)
 	}
 	puts("</table><br>");
 	puts("<center><input type=\"submit\" value=\"Submit\"></center></form>");
+}
+
+static const char *rejstr = "<p>It appears you have already voted for this round.</p>\n"
+	"<p>If you think this is a mistake, please contact "
+	"<a href=\"mailto:orrc@mutantstargoat.com\">orrc@mutantstargoat.com</a></p>\n"
+	"<p>Feel free to visit the <a href=\"orrc?cmd=show\">gallery</a> to see all the entries</p>\n";
+
+void vote_reject_msg(void)
+{
+	html_heading(2, "Vote rejected");
+	puts(rejstr);
 }

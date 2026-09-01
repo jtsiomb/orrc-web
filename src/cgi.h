@@ -22,6 +22,7 @@ enum cgi_request { CGI_GET, CGI_POST };
 
 extern enum cgi_request cgi_req;
 extern struct cgivar *cgi_input, *cgi_cookies;
+extern const char *cgi_remote_addr;
 
 int cgi_init(void);
 

@@ -25,4 +25,8 @@ void html_sep(void);
 
 void html_img(const char *img, const char *desc, const char *link);
 
+void html_parbegin(void);
+void html_parend(void);
+void html_newline(void);
+
 #endif	/* HTML_H_ */

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include "orrc.h"
@@ -12,10 +13,10 @@ static void gallery(void);
 void op_show(void)
 {
 	int id;
-	const char *str, *img;
+	const char *str;
 	char *endp;
 	struct entry *ent;
-	char buf[128];
+	char buf[256];
 	struct stat st;
 	size_t fsize = 0;
 
@@ -27,30 +28,25 @@ void op_show(void)
 	if(endp == str || id < 0 || id >= dynarr_size(entries)) {
 		cgi_panic("invalid entry: \"%s\"", str);
 	}
-	ent = entries + id;
+	ent = find_entry(id);
 
-	sprintf(buf, "current/entry%02d/preview.jpg", id);
-	if(access(buf, R_OK) == -1) {
-		img = "img/none.gif";
-	} else {
-		img = strdup_nf(buf);
-	}
+
+	cgi_begin_output();
+	html_begin();
 
 	html_heading(1, "ORRC Entry");
 	html_sep();
 	html_heading(2, ent->title);
 
-	html_img(img, ent->title, ent->img);
-
 	printf("<p>by <b>%s</b></p>\n", ent->user);
+	html_img(ent->imgprev, ent->title, ent->img);
 
 	if(ent->desc) {
 		html_heading(3, "Description");
 		printf("<p>%s</p>\n", ent->desc);
 	}
 
-
-	sprintf(buf, "current/entry%02d/%s", id, ent->archive);
+	snprintf(buf, sizeof buf, "%s/entry%02d/%s", round_dir, id, ent->archive);
 	if(stat(buf, &st) != -1) {
 		fsize = st.st_size;
 	}
@@ -60,6 +56,49 @@ void op_show(void)
 			fsize > 0 ? filesize_str(fsize) : "??");
 }
 
+#define NCOLS	4
+
 static void gallery(void)
 {
+	int i, col;
+	struct entry *ent;
+
+
+	cgi_begin_output();
+	html_begin();
+
+	html_heading(1, "ORRC Gallery");
+	html_sep();
+
+	html_heading(2, "Round");
+
+	if(round_date) {
+		printf("<p>%s</p>\n", round_date);
+	}
+	if(theme) {
+		printf("<p><b>Theme</b>: <i>%s</i></p>\n", theme);
+	}
+
+	if(!cgi_find_cookie("voted") && strcmp(round_dir, "current") == 0) {
+		puts("<p><a href=\"orrc?cmd=vote\">Vote for your favourite entries!</a></p>");
+	}
+
+	html_heading(2, "Entries");
+
+	if(dynarr_empty(entries)) return;
+
+	puts("<table cellspacing=\"15\">");
+	col = 0;
+	ent = entries;
+	for(i=0; i<dynarr_size(entries); i++) {
+		if(!col) puts(i ? "</tr><tr>" : "<tr>");
+
+		printf("<td><center><a href=\"orrc?cmd=show&dir=%s&entry=%d\">", round_dir, ent->id);
+		html_img(ent->imgthumb, ent->title, 0);
+		printf("<br><i>%s</i></a><br>by %s</center></td>\n", ent->title, ent->user);
+
+		if(++col >= NCOLS) col = 0;
+		ent++;
+	}
+	puts("</tr></table>");
 }

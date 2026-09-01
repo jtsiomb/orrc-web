@@ -84,3 +84,18 @@ void html_img(const char *img, const char *desc, const char *link)
 		printf("<img src=\"%s\" alt=\"%s\">\n", img, desc);
 	}
 }
+
+void html_parbegin(void)
+{
+	puts("<p>");
+}
+
+void html_parend(void)
+{
+	puts("</p>");
+}
+
+void html_newline(void)
+{
+	puts("<br>");
+}
