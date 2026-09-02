@@ -116,3 +116,16 @@ void html_newline(void)
 {
 	puts("<br>");
 }
+
+char *html_droptags(char *str)
+{
+	char *res = str;
+
+	while(*str) {
+		if(*str == '<' || *str == '>' || *str == '&' || *str == '"') {
+			*str = '.';
+		}
+		str++;
+	}
+	return res;
+}

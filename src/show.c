@@ -43,7 +43,7 @@ void op_show(void)
 	}
 	id = strtol(str, &endp, 10);
 	if(endp == str || id < 0 || id >= dynarr_size(entries)) {
-		cgi_panic("invalid entry: \"%s\"", str);
+		cgi_panic("invalid entry: \"%s\"", html_droptags((char*)str));
 	}
 	ent = find_entry(id);
 

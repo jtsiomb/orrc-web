@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <time.h>
 #include "orrc.h"
@@ -40,6 +41,7 @@ static int load_entries(void);
 static int parse_date(struct tm *tm, const char *dstr);
 static char *locate_image(const char *dir, const char *basename);
 static void shuffle(struct entry *arr, int count);
+static int valid_dirname(const char *s);
 
 
 int main(void)
@@ -80,8 +82,8 @@ int main(void)
 	if(state == ST_VOTE || state == ST_SUBMIT || !(round_dir = cgi_find_input("dir"))) {
 		round_dir = "current";
 	} else {
-		if(strlen(round_dir) > 32) {
-			cgi_panic("\"dir\" parameter too long");
+		if(!valid_dirname(round_dir)) {
+			cgi_panic("invalid \"dir\" parameter");
 		}
 	}
 
@@ -132,7 +134,8 @@ static void debug_output(void)
 		html_heading(3, "Query data");
 		printf("<ul>\n");
 		for(i=0; i<dynarr_size(cgi_input); i++) {
-			printf("<li>\"%s\": \"%s\"</li>\n", cgi_input[i].name, cgi_input[i].value);
+			printf("<li>\"%s\": \"%s\"</li>\n", html_droptags(cgi_input[i].name),
+					html_droptags(cgi_input[i].value));
 		}
 		puts("</ul>\n");
 	}
@@ -141,7 +144,8 @@ static void debug_output(void)
 		html_heading(3, "Cookies");
 		printf("<ul>\n");
 		for(i=0; i<dynarr_size(cgi_cookies); i++) {
-			printf("<li>\"%s\": \"%s\"</li>\n", cgi_cookies[i].name, cgi_cookies[i].value);
+			printf("<li>\"%s\": \"%s\"</li>\n", html_droptags(cgi_cookies[i].name),
+					html_droptags(cgi_cookies[i].value));
 		}
 		puts("</ul>\n");
 	}
@@ -313,4 +317,16 @@ static void shuffle(struct entry *arr, int count)
 			arr[r] = tmp;
 		}
 	}
+}
+
+static int valid_dirname(const char *s)
+{
+	if(strlen(s) > 32) return 0;
+
+	while(*s) {
+		if(!isalnum((unsigned char)*s++)) {
+			return 0;
+		}
+	}
+	return 1;
 }

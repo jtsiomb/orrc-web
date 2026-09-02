@@ -46,4 +46,6 @@ void html_parbegin(void);
 void html_parend(void);
 void html_newline(void);
 
+char *html_droptags(char *str);
+
 #endif	/* HTML_H_ */
