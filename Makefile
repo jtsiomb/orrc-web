@@ -18,3 +18,7 @@ clean:
 .PHONY: cleandep
 cleandep:
 	rm -f $(dep)
+
+.PHONY: archive
+archive:
+	git archive -o orrc.tar.gz --prefix=orrc/ HEAD
