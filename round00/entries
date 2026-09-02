@@ -1,0 +1,26 @@
+orrc {
+	theme = "Space"
+	start = "19950920"
+	end = "19951020"
+	entry {
+		id = 0
+		title = "Plan 9 from outer space"
+		user = "Rob Pike"
+		desc = "An attempt to make a better UNIX"
+		archive = "p9.zip"
+	}
+	entry {
+		id = 1
+		title = "Space Odyssey"
+		user = "Stanley Kubrick"
+		desc = "I'm afraid I can't do that Dave"
+		archive = "2001.zip"
+	}
+	entry {
+		id = 2
+		title = "SpaceQuest 6"
+		user = "Sierra On-Line"
+		desc = "Space Janitor"
+		archive = "sq6.zip"
+	}
+}

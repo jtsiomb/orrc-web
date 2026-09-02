@@ -9,6 +9,9 @@ program responsible for voting, and generation of gallery and entry showcase
 pages, as well as any other tools used to run the competition. No binary files
 are included in the repo.
 
+ - Competition website: https://orrc.mutantstargoat.com
+ - Github repo: https://github.com/jtsiomb/orrc-web
+
 License
 -------
 Copyright (C) 2026 John Tsiombikas <nuclear@mutantstargoat.com>
