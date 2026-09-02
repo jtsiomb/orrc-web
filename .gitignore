@@ -11,3 +11,4 @@ cgi-bin/
 papers/
 round*/
 current
+*.gz

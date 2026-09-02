@@ -108,6 +108,9 @@ int main(void)
 
 	html_sep();
 	puts("<p><a href=\"/\">Back to the main page</a></p>");
+	puts("<p><small>ORRC backend is free software, <a href=\"http://www.gnu.org/licenses/agpl\">AGPLv3</a> or later.");
+	puts("- <a href=\"orrc.tar.gz\">source code</a>");
+	puts("- <a href=\"https://github.com/jtsiomb/orrc-web\">github project</a></small></p>");
 
 	if((str = cgi_find_input("debug")) && strcmp(str, "false") != 0 && strcmp(str, "0") != 0) {
 		debug_output();
