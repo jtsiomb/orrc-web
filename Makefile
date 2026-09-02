@@ -4,7 +4,7 @@ dep = $(src:.c=.d)
 bin = cgi-bin/orrc
 
 CFLAGS = -std=gnu89 -pedantic -Wall -g -MMD
-LDFLAGS = -static -ltreestor
+LDFLAGS = -static -ltreestore
 
 $(bin): $(obj)
 	$(CC) -o $@ $(obj) $(LDFLAGS)
