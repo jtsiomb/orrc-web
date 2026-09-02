@@ -25,7 +25,15 @@ Notes
 -----
 Each round gets a `roundNN` directory. To start the voting, create the `entries`
 file, and symlink the correct `roundNN` as `current`. See the example
-`round00/entries` file. When voting ends, sum the scores in `current/score`,
+`round00/entries` file.
+
+Each entry gets its own `roundNN/entryXX` directory which should include:
+ - The submitted archive file for download (zip or tarball).
+ - The full image.
+ - A preview image named `preview.???` roughly 800 - 1000 pixels wide.
+ - A thumbnail named `thumb.???` 200 pixels wide.
+
+When voting ends, sum the scores in `current/score`,
 which may include duplicates that need to be discarded first. 
 
 TODO
