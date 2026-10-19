@@ -69,7 +69,7 @@ void op_show(void)
 	}
 
 	html_heading(3, "Download");
-	printf("<p><a href=\"%s\">%s</a> (%s)</p>\n", ent->archive, ent->archive,
+	printf("<p><a href=\"%s\">%s</a> (%s)</p>\n", buf, ent->archive,
 			fsize > 0 ? filesize_str(fsize) : "??");
 }
 

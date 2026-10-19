@@ -199,16 +199,17 @@ static int load_entries(void)
 			desc = ts_get_attr_str(node, "desc", 0);
 			img = ts_get_attr_str(node, "image", 0);
 
+			snprintf(path, sizeof path, "%s/entry%02d", round_dir, num);
+
 			memset(&entry, 0, sizeof entry);
 			entry.id = num;
 			entry.title = strdup_nf(title);
 			entry.user = strdup_nf(user);
 			if(desc) entry.desc = strdup_nf(desc);
-			if(img) entry.img = strdup_nf(img);
+			if(img) entry.img = locate_image(path, img);
 			entry.archive = strdup_nf(archive);
 
 			/* populate derived fields */
-			snprintf(path, sizeof path, "%s/entry%02d", round_dir, entry.id);
 			entry.imgthumb = locate_image(path, "thumb");
 			entry.imgprev = locate_image(path, "preview");
 
@@ -293,6 +294,12 @@ static char *locate_image(const char *dir, const char *basename)
 	static const char *suffixes[] = {".png", ".jpg", ".jpeg", ".gif", 0};
 	int i;
 	char buf[256];
+
+	/* try full name first */
+	sprintf(buf, "%s/%s", dir, basename);
+	if(access(buf, R_OK) == 0) {
+		return strdup_nf(buf);
+	}
 
 	for(i=0; suffixes[i]; i++) {
 		sprintf(buf, "%s/%s%s", dir, basename, suffixes[i]);
